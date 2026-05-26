@@ -1,0 +1,116 @@
+%! TEX root = ../main.tex
+\documentclass{article}
+
+\usepackage{geometry}
+
+% must be last in usepackage list!
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{subfiles}
+
+% other stuff
+\newcommand{\myname}{Quang Kieu}
+\newcommand{\myemail}{qkieu@mit.edu}
+\newcommand{\myaddress}{
+    & 10-030 \\
+    & 77 Massachusetts Avenue \\
+    & Cambridge, MA 02139
+}
+\newcommand{\mydate}{June 3, 2026}
+\newcommand{\mycompletion}{August 30, 2026}
+\newcommand{\mytitle}{Your Title}
+\newcommand{\mytimeline}{\vspace{1em}\noindent\textbf{Timeline} }
+
+\author{
+    \myname\\
+    Massachusetts Institute of Technology\\
+    \texttt{\myemail}
+}
+
+\date{\mydate}
+
+\title{\mytitle}
+
+\begin{document}
+
+\begingroup
+\fontfamily{phv}\large\selectfont
+
+\newgeometry{left=1in,right=1in}
+
+\begin{center}
+Massachusetts Institute of Technology \\
+Department of Electrical Engineering and Computer Science
+\end{center}
+
+\begin{center}
+Proposal for Thesis Research in Partial Fulfillment \\
+of the Requirements for the Degree of \\
+Doctor of Philosophy
+\end{center}
+
+\vspace{1em}
+\noindent Title: \mytitle
+
+\vspace{1em}
+\noindent\begin{tabular}{@{}ll}
+Submitted by: & \myname \\
+              \myaddress
+\end{tabular}
+
+\vspace{1em}
+\noindent Signature of author: \rule{5cm}{0.1pt}
+
+\vspace{1em}
+\noindent Date of Submission: \mydate
+
+\vspace{1em}
+\noindent Expected Date of Completion: \mycompletion
+
+\vspace{1em}
+\noindent Laboratory: Soft and Micro Robotics Laboratory, Research Laboratory of Electronics
+
+\vspace{1em}
+\noindent Brief Statement of the Problem:
+
+\vspace{1em}
+\begin{minipage}{\dimexpr\textwidth-1cm}
+
+\noindent 
+
+\end{minipage}
+
+\vspace{1em}
+\noindent Supervision Agreement:
+
+\vspace{1em}
+\begin{minipage}{\dimexpr\textwidth-1cm}
+\noindent The program outlined in this proposal is adequate for a Ph.D. thesis. The
+supplies and facilities required are available, and I am willing to supervise
+the research and evaluate the thesis report.
+\end{minipage}
+
+\vspace{2em}
+\begin{flushright}
+    \rule{0.7\linewidth}{0.1pt}\\
+    {\normalsize Prof. Yufeng (Kevin) Chen, Associate Professor of Electrical Engineering}
+\end{flushright}
+
+\restoregeometry
+
+\endgroup
+
+\newpage
+
+\maketitle
+
+\subfile{sections/abstract}
+
+\subfile{sections/intro}
+
+\subfile{sections/procedure}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
