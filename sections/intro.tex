@@ -2,7 +2,75 @@
 \documentclass[../main.tex]{subfiles}
 
 \begin{document}
+
 \section{Introduction}
 \label{sec:introduction}
+At Soft-Micro Robotics Lab, we have developed a class of microaerial-vehicle (MAV) that is both collision resistant, able to stay hover after mid-air collision, and agile, capable of performing somersault\cite{9357346}. This class of MAVs also demonstrated unique actuator robustness, capable of recovering from more than 100 punctures with less than 20\% performance degradation\cite{doi:10.1126/scirobotics.adf4278}. These robotics feats were achieved thanks to the use of novel dielectric elastomer actuators (DEAs) instead of piezoelectric actuators (PEAs) like other MAVs\cite{4457871,10106430}. However, due to the small sizes and payloads, our DEA-based MAVs are unable to operate autonomously. Like other MAVs at this scale, our robots relies on external sources for driving the actuators, sensing the robot pose, and controlling the flight (see figure \ref{fig:system}). Therefore, they are not practical for any application outside of the confined lab space. This research aims to address these limitations by developing an ultra-lightweight electrical system that is capable of driving, sensing, and controlling while being carried by the robot.
 
+This research aims to not only demonstrate the possibility of full autonomous flight of DEA MAVs but to also provide analytical tools for designing power electronics to provide autonomy to other insect-scale MAVs.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=.55\linewidth]{images/system.jpg}
+    \caption{External robot system from \cite{Hsiao_Kim_Ceron_Ren_Chen_2023} consists of desktop amplifiers to drive the actuators, Vicon motion capture system to sense robot's pose, and desktop computer to run control and feedback loop.}
+    \label{fig:system}
+\end{figure}
+
+% \subsection{The robot}
+
+% \subsubsection{Dielectric Elastomer Actuator}
+% 
+
+\subsection{Challenges}
+\subsubsection{Power autonomy}
+DEA can be thought of an elastic capacitor with carbon fiber as the electrodes and silicon elastomer as the dielectric\cite{Chen_Zhao_Mao_Chirarattananon_Helbling_Hyun_Clarke_Wood_2019}. When high voltage is applied, the electric field developed between the electrodes pull them closer to each other, squeezing the elastomer. When squeezed, the elastomer expands to the sides, creating a linear motion for mechanical actuation as shown in figure \ref{fig:displacement}. Hence, driving DEAs is approximately driving a resistive and capacitive load.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=1\linewidth]{images/displacement.jpg}
+    \caption{DEAs displacement when voltage is applied\cite{Chen_Zhao_Mao_Chirarattananon_Helbling_Hyun_Clarke_Wood_2019}.}
+    \label{fig:displacement}
+\end{figure}
+
+Unlike PEAs that can be driven at 200 V or less\cite{10106430, Jafferis_Helbling_Karpelson_Wood_2019}, DEAs for our MAVs are typically driven at higher than 1 kV\cite{9357346}, up to 2 kV. Furthermore, whereas PEAs' mechanical transduction efficiency is around 20\%, DEAs' efficiency can be as low as 5.6\%\cite{Chen_Zhao_Mao_Chirarattananon_Helbling_Hyun_Clarke_Wood_2019}, requiring significantly more electrical power for the same flying performance. The higher voltage and power requirements pose a bigger challenge for miniaturizing power electronics, demanding larger and heavier components than electrical systems developed for PEA MAVs. Thanks to recent advances in our DEAs manufacturing, the driving voltage can be scaled down to less than 1 kV\cite{Ren_Kim_Ji_Zhu_Niroui_Kong_Chen_2022} in exchange for lower transduction efficiency and higher capacitive and resistive loading. This makes miniaturization of the power electronic system and energy source more realizable. Nevertheless, the robot's mechanical system will also have to be reiterated alongside the developing electrical system.
+
+\subsubsection{Sensing autonomy}
+Our MAV is 4 DEAs with wings coupled together with a carbon fiber frame (see figure \ref{fig:robot}). When actuated, each actuator and wing unit provides upward aerodynamic lift, allowing the MAV to be controllable like a typical quadcopter drone. Like quadcopter, controllability of the DEA MAV depends on knowing the robot's orientation (roll, pitch, and yaw)\cite{Chen_Zhao_Mao_Chirarattananon_Helbling_Hyun_Clarke_Wood_2019}. Commercial drone accomplish this by inclusion of an onboard inertial measurement unit (IMU)\cite{8046794}. These units often comprises of a gyroscope to provide angular rotation rate and accelerometer to provide linear acceleration. These data have to be processed by a microprocessor to calculate the robot's orientation. For stable control, the data rate of this system has to be higher than 400 Hz. With advances in semiconductor manufacturing, milligram-scale microprocessors and IMUs are now commercially available to be integrated to the robot.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=1\linewidth]{images/robot.png}
+    \caption{DEA MAVs with 4 actuator and wings units\cite{9357346}.}
+    \label{fig:robot}
+\end{figure}
+
+Our lab has also successfully demonstrated flights with partial sensor autonomy with on-board commercial IMU, optical flow camera, and time-of-flight (ToF) sensor for inferring orientation and translation (see figure \ref{fig:sensor-circuit}). An off-board microcontroller board processed the data and an off-board power supply energize these sensors. For full sensor autonomy, this thesis aims to incorporate some of these sensors into the electrical system and process their data with an on-board microprocessor.
+
+\begin{figure}[!htbp]
+    \hspace*{\fill}%
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/sensor-top.jpg}
+        %TODO: annotate
+        \caption{Top sensor board with BNO085 IMU.}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/sensor-bot.jpg}
+        %TODO: annotate 
+        \caption{Bottom sensor board with PAA3905 camera and VL53L1X ToF.}
+    \end{subfigure}
+    \hspace*{\fill}%
+    \caption{Fabricated and assembled prototype flexible circuit}
+    \label{fig:sensor-circuit}
+\end{figure}
+
+\subsubsection{Control autonomy}
+For a fully autonomous flying robot platform, the robots must be able to control and stabilize itself. On the hardware side, this means the power electronics must not only able to provide the high driving voltage but also able to modulate the voltage for each individual actuator. This can be achieved by using an independent power converter for each actuator or switches to connect and disconnect each actuator from shared power converters\cite{Jafferis_Helbling_Karpelson_Wood_2019, Ozaki2021}. Each method poses its own trade-offs in term of power efficiency and weight to be studied for in this thesis. On the software side, this means the microprocessor must not only control the power converters and switches but also run a control loop. This loop uses the processed sensor data to calculate the required actuator voltage for stabilizing the robot. Currently, the robot control loop is based on the Harvard RoboBee controller\cite{6906587} implemented in MATLAB Simulink. This loop will be ported to a microcontroller. This microcontroller has to be selected with adequate performance for processing the loop and controlling the actuators in real-time for stabilization.
+
+\subsubsection{Weight}
+Like other MAVs, out robot's most imposing limitation is the low payload. The current robot weights 0.85g with 1.2g of payload ($\approx$ 2.4 lift to weight ratio). For controllability, lift coefficient must be greater than 1.1
+
+This imposes a hard limit of less than 1.2g for the entire electrical system, including the batteries. For controll
 \end{document}
