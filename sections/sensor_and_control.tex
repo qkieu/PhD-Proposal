@@ -5,9 +5,51 @@
 \section{Sensors and Controller System}
 \label{sec:sense_and_control}
 
-\subsection{Sensors System}
-When robotic systems are miniaturized, actuators and energy sources can be scaled down to fit with the system's physical capacity. However, the same cannot be said for sensing and control. To fly, a robot has to sense its orientation and position no matter its size. In fact, sensing may be even more challenging at small scale as smaller systems are more susceptible to same sources of disturbance. Therefore, MAVs at this scale have been relying on external motion capture system for state estimation. To enable operation where 
+To enable operation outside of the motion capture stage, we developed a sub-gram sensory and compute package (see figure \ref{fig:sensor-circuit}) with off-the-shelf components. The selected sensors were capable of providing both orientation and position for feedback control when coupled with state estimation algorithm. The selected microcontroller were able to process a control loop at fast enough time-step for stable control of the robot. This work demonstrated feasibility of full onboard sensing and computation for more autonomous operation beyond the motion capture stage.
 
-\subsection{Controllers System}
+\subsection{Sensors System}
+% When robotic systems are miniaturized, actuators and energy sources can be scaled down to fit with the system's physical capacity. However, the same cannot be said for sensing and control. To fly, a robot has to sense its orientation and position no matter its size. In fact, sensing may be even more challenging at small scale as smaller systems are more susceptible to same sources of disturbance. Therefore, MAVs at this scale have been relying on external motion capture system for state estimation. To enable operation outside of the motion capture stage, we developed a sub-gram sensor package (see figure \ref{fig:sensor-circuit}) capable of providing both orientation and position for feedback control when coupled with state estimation algorithm.
+
+\subsubsection{Orientation Sensing}
+For orientation estimate, we relied on two sensor technologies: accelerometer and gyroscope. Using the accelerometer, we can estimate absolute roll and pitch by infering from expected acceleration due to the robot's motion and gravity. With the gyroscope, we can sense relative rotational speed to estimate yaw and couple with accelerometer for more accurate roll and pitch. Together, they provide sufficient information for estimating rotation and angular velocity.
+As the result, sensor manufacturers often combine accelerometer and gyroscope into one single sensor package called Inertial Measurement Unit (IMU). For our system, we selected ST's LSM6DSV80X IMU as it is available in a small package and with onboard sensor fusion algorithm to directly output orientation estimate (see figure \ref{subfig:sensor-top}).
+
+\subsubsection{Position Sensing}
+For position estimate, we utilize two other sensor technologies: laser time-of-flight (ToF) and optical flow. With ToF sensor mounted below the robot, we can directly measure the altitude of the robot relative to the ground. The optical flow sensor is also mounted below to see how the floor is visually changing. Coupled with ToF and estimated orientation, the optical flow sensor can be used to calculate the robot's lateral velocity and position. For the ToF, we selected OSRAM's TMF8806 for its small package and open documentation, allowing us to fine tune its operation for speed, accuracy, and power consumption. For the optical flow, we selected PixArt's PAA3905E1-Q as it can directly output lateral pixel velocity without any data post-processing (see figure \ref{subfig:sensor-bot}).
+
+\subsection{Controller System}
+% Similar to sensing, the computational requirement for controlling small-scale flying systems may need to be more responsive to better reject disturbances. Hence, our MAVs have been controlled by a desktop computer running a Simulink control loop with Desktop Real-Time. For autonomous operation, we used a microcontroller unit (MCU) that can poll information from the sensors and run the Simulink control loop while being light enough to be carried by the robot.
+
+A wafer-level CY8C6245 MCU from Infineon was used as it is the same microcontroller used for power electronics system (section \ref{sec:power}). The Simulink controller loop was exported to C code to run on the MCU. In addition, we implemented a logging system to record all sensor data and MCU command output at every time step to compare against the desktop's output. The MCU was also mounted on the robot for a complete sensor and control autonomous system (see figure \ref{subfig:sensor-top}).
+
+\begin{figure}[!htbp]
+    \hspace*{\fill}%
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/sensor-top.jpg}
+        \caption{Top of robot with IMU board on top of MCU board.}
+        \label{subfig:sensor-top}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/sensor-bot.jpg}
+        \caption{Bottom of robot with optical flow and time-of-flight sensors board.}
+        \label{subfig:sensor-bot}
+    \end{subfigure}
+    \hspace*{\fill}%
+    \caption{Sensor and compute system installed on DEA robot}
+    \label{fig:sensor-circuit}
+\end{figure}
+
+\subsection{Premilinary Results}
+With our sensory and compute system, the robot was flying using onboard sensing and processing, hovering for 10 seconds and following a predefined trajectory for 7 seconds (see figure \ref{fig:mcu})
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=1\linewidth]{images/mcu_v4.pdf}
+    \caption{A) A schematic that illustrates sensing and computation are done onboard while driving voltage is generated offboard. B) An image that shows a 10-s hovering flight. The yellow dot indicates the hovering setpoint. C) Estimated and measured robot position corresponding to the flight in (B). D) A composite image sequence of a 7-s setpoint switching flight. E) Estimated and measured robot position corresponding to the flight in (D). The scale bars in (B) and (D) represent 1 cm.}
+    \label{fig:mcu}
+\end{figure}
 
 \end{document}
