@@ -7,16 +7,63 @@
 
 To enable physically untethered operation, we used an iterative process to engineer a fully power autonomous robotic system with 3 main components: a flying robot, a custom lithium-ion battery, and a power-electronics circuit. In this process, we co-designed each system to maximize the total power-density of the robot. This thesis focuses on the power-electronics circuit to implement a sub-gram high-voltage power electronics circuit using off-the-shelf components and commercial flex PCB manufacturing process. In the process, we investigated different converter implementations and driving waveforms to minimize battery weight and maximize mechanical output. The success of this project will unshackle the robot from stationary power amplifiers, bringing soft-actuated flying robots closer to practical applications.
 
-\subsection{Battery Design}
+\subsection{Custom battery}
+For powering the robot, we worked with another research lab to produce custom lithium ion batteries from dry cells. The battery electrolyze was formulated with high mobility for high power density in exchange for lower capacity. The cells were then encapsulated with minimal packaging materials, and appropriately sized electrodes were welded on. The power-density of these custom batteries was measured in the lab as the most important metric for designing with the circuits and the robot. The custom batteries achieved power density of more than $3 W / g$, 10 times higher than commercial lithium ion batteries (see figure \ref{fig:batt-density}).
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/battery-density.png}
+    \caption{Power and energy density of custom battery compared to other energy sources.}
+    \label{fig:batt-density}
+\end{figure}
+% The batteries were tested in the battery lab to characterize their peak power density
 
 \subsection{Waveform Optimization}
+% As DEAs are capacitive loads, the electrical drivers need to cycle charges in and out of the actuators each actuation cycle. Therefore, the 
+As part of weight-reduction strategies, the driving waveform was optimized to reduce peak power requirements such that the battery size can be minimized. When multiple driving DEAs, we can drive them out-of-phase such that one DEA will be charging while the another one is discharging to reduce the net current thus power from the battery. At the same time, the charging and discharging should be with constant power for minimal input current peak. Furthermore, the driving waveform was also optimized to produce high fundamental voltage with lower actual output voltage. This allowed the circuit to be implemented with smaller components, reducing the circuit's weight. The resulting ideal waveform would have each actuator channel driven with 90 degree phase for reducing net current. It would also be a pseudo-square wave with approximately quadratic rise and fall time of 25\% of the period (see figure \ref{fig:waveform}).
+
+\begin{figure}[!htb]
+    \centering
+    \begin{tikzpicture}[
+            declare function={
+                    wave_period(\x) = and(0 <= \x, \x < 0.25) * (sqrt(\x*4)) +
+                    and(0.25 <= \x, \x < 0.5) * (1) +
+                    and(0.5 <= \x, \x < 0.75) * (sqrt((0.25 - \x + 0.5)*4)) +
+                    and(0.75 <= \x, \x < 1) * (0);
+                    wave(\x) = wave_period(mod(\x,1));
+                }]
+        \begin{axis}[
+                axis x line=middle, axis y line=middle,
+                ymin=-0.25, ymax=1.25,
+                ytick=\empty,
+                ylabel=$V_{out}$,
+                xmin=-0.25, xmax=1.25,
+                xtick={0,0.25,0.5,0.75,1},
+                xticklabels={$0$, $\frac{\pi}{2}$, $\pi$, $\frac{3\pi}{2}$, $2\pi$},
+                xlabel=$\omega t$,
+                domain=0:1,samples=201,
+            ]
+            \addplot[black,thick] {wave(x)};
+            \addlegendentry{Channel 1}
+            \addplot[red,thick] {wave(x+0.75)};
+            \addlegendentry{Channel 2}
+            \addplot[blue,thick] {wave(x+0.5)};
+            \addlegendentry{Channel 3}
+            \addplot[green,thick] {wave(x+0.25)};
+            \addlegendentry{Channel 4}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Qualitative plot of optimized output waveform.}
+    \label{fig:waveform}
+\end{figure}
+
+\subsection{Driver Circuits}
+With the targeted output waveform.
 
 \subsection{Converter Optimization}
 
-\subsection{Driver Circuits}
-
 \subsection{Lightweight PCB}
 
-\subsection{Premilinary Results}
+\subsection{Preliminary Results}
 
 \end{document}
