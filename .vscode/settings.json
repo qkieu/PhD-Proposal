@@ -1,4 +1,27 @@
 {
     "latex-workshop.latex.outDir": "%DIR%/.build",
     "latex-workshop.formatting.latex": "latexindent",
+    // "latex-workshop.latex.recipes": [
+    //     {
+    //         "name": "pdflatex-shell-escape-recipe",
+    //         "tools": [
+    //             "pdflatex-shell-escape"
+    //         ]
+    //     }
+    // ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-shell-escape", // <---- added this line
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
+                "-outdir=%OUTDIR%",
+                "%DOC%"
+            ]
+        },
+    ]
 }

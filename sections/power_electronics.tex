@@ -20,7 +20,9 @@ For powering the robot, we worked with another research lab to produce custom li
 
 \subsection{Waveform Optimization}
 % As DEAs are capacitive loads, the electrical drivers need to cycle charges in and out of the actuators each actuation cycle. Therefore, the 
-As part of weight-reduction strategies, the driving waveform was optimized to reduce peak power requirements such that the battery size can be minimized. When multiple driving DEAs, we can drive them out-of-phase such that one DEA will be charging while the another one is discharging to reduce the net current thus power from the battery. At the same time, the charging and discharging should be with constant power for minimal input current peak. Furthermore, the driving waveform was also optimized to produce high fundamental voltage with lower actual output voltage. This allowed the circuit to be implemented with smaller components, reducing the circuit's weight. The resulting ideal waveform would have each actuator channel driven with 90 degree phase for reducing net current. It would also be a pseudo-square wave with approximately quadratic rise and fall time of 25\% of the period (see figure \ref{fig:waveform}).
+As part of weight-reduction strategies, the driving waveform was optimized to reduce peak power requirements such that the battery size can be minimized. When multiple driving DEAs, we can drive them out-of-phase such that one DEA will be charging while the another one is discharging to reduce the net current thus power from the battery. At the same time, the charging and discharging should be with constant power for minimal input current peak. Furthermore, the driving waveform was also optimized to produce high fundamental voltage with lower actual output voltage. This allowed the circuit to be implemented with smaller components, reducing the circuit's weight. The resulting ideal waveform would have each actuator channel driven with $\frac{\pi}{2}$ phase for reducing net current. It would also be a pseudo-square wave with approximately quadratic rise and fall time of 25\% of the period (see figure \ref{fig:waveform}).
+
+% In this waveform, the period is divided into four $\frac{\pi}{2}$ sections. For every section, one actuator will be charging, one will be discharging, and the others will be at rest such that 
 
 \begin{figure}[!htb]
     \centering
@@ -58,7 +60,25 @@ As part of weight-reduction strategies, the driving waveform was optimized to re
 \end{figure}
 
 \subsection{Driver Circuits}
-With the targeted output waveform.
+Two bidirectional circuit topologies were investigated for driving the DEAs: independent converters and shared converters. With independent converters, each channel will have its own bidirectional flyback converter for charging and discharging (see figure \ref{fig:independent-converter}).
+
+\begin{figure}[!htb]
+    \centering
+    \includesvg[scale=0.75]{images/independent_converters.svg}
+    \caption{Independent converters topology with four bidirectional flyback converters.}
+    \label{fig:independent-converter}
+\end{figure}
+
+With shared converters, all 4 channels would share a coupled-inductor boost converter for charging and a flyback buck converter for discharging. Each channel will then be consecutively connected to the appropriate converter using high-side switches (see figure \ref{fig:shared-converter}).
+
+\begin{figure}[!htb]
+    \centering
+    \includesvg[scale=0.75]{images/shared_converters.svg}
+    \caption{Shared converters topology with two shared converters and four sets of high-side switches.}
+    \label{fig:shared-converter}
+\end{figure}
+
+The independent converters topology allows more flexibility in terms of output waveform and power but lower efficiency. On the other hand, the shared converters system is more efficient but have less control of waveform, limited power, and lower power-density.
 
 \subsection{Converter Optimization}
 
