@@ -59,31 +59,58 @@ As part of weight-reduction strategies, the driving waveform was optimized to re
     \label{fig:waveform}
 \end{figure}
 
-\subsection{Driver Circuits}
-Two bidirectional circuit topologies were investigated for driving the DEAs: independent converters and shared converters. With independent converters, each channel will have its own bidirectional flyback converter for charging and discharging (see figure \ref{fig:independent-converter}).
+\subsection{Driver Circuit}
+On high-level, the power-electronics system needs to receive voltage commands and drive each actuator to the commanded voltage. This requires the system to have controllable output channels and wireless communication system for operation without physical tethers. We accomplished this with two power converter topologies and a 2-MCUs system with proprietary communication protocol.
+
+\subsubsection{Topologies}
+Two bidirectional circuit topologies were investigated for driving the DEAs: independent converters and shared converters. With independent converters, each channel has its own bidirectional flyback converter for charging and discharging (see figure \ref{fig:independent-converter}).
 
 \begin{figure}[!htb]
     \centering
-    \includesvg[scale=0.75]{images/independent_converters.svg}
+    \includesvg[scale=0.5]{images/independent_converters.svg}
     \caption{Independent converters topology with four bidirectional flyback converters.}
     \label{fig:independent-converter}
 \end{figure}
 
-With shared converters, all 4 channels would share a coupled-inductor boost converter for charging and a flyback buck converter for discharging. Each channel will then be consecutively connected to the appropriate converter using high-side switches (see figure \ref{fig:shared-converter}).
+With shared converters, all 4 channels share a coupled-inductor boost converter for charging and a flyback buck converter for discharging. Each channel will then be consecutively connected to the appropriate converter using high-side switches (see figure \ref{fig:shared-converter}).
 
 \begin{figure}[!htb]
     \centering
-    \includesvg[scale=0.75]{images/shared_converters.svg}
+    \includesvg[scale=0.5]{images/shared_converters.svg}
     \caption{Shared converters topology with two shared converters and four sets of high-side switches.}
     \label{fig:shared-converter}
 \end{figure}
 
-The independent converters topology allows more flexibility in terms of output waveform and power but lower efficiency. On the other hand, the shared converters system is more efficient but have less control of waveform, limited power, and lower power-density.
+% The independent converters topology allows more flexibility in terms of output waveform and power but lower efficiency. On the other hand, the shared converters system is more efficient but have less control of waveform, limited power, and lower power-density.
 
-\subsection{Converter Optimization}
+\subsubsection{Communication and Control}
+A dual-core chip, CY8C6245 from Infineon, was used as the main controller for the circuit with a STM32WB05 wireless MCU for communication. In this setup, the CY8C6245 main CPU core was used to handle high-level communication and command. It communicates with the wireless MCU to receive voltage commands and forward the commands to the secondary core. The secondary core drives the converters with hardware PWM signals. It also senses the input battery voltage and the actuator output voltages to vary the PWM signals accordingly and stop charging when the actuators reached the commanded voltages.
 
-\subsection{Lightweight PCB}
+\subsubsection{Lightweight PCB}
+Each circuit topology was implemented on 3 by 3 centimeters double-sided flexible PCBs with 25 $\mu$m polyimide substrate and 1/3 oz copper (see figure \ref{fig:converter-pcbs}). For minimum weight, the PCB was produced with minimal to no solder masks and silkscreen. Wherever copper pours were used, the copper area would be hatched to reduce copper usage as well. With these weight reduction methods, the produced PCBs weighted around 100 mg for both systems.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=.75\linewidth]{images/pcbs.jpg}
+    \caption{Top view of driver PCBs for independent converters (left) and shared converters (right).}
+    \label{fig:converter-pcbs}
+\end{figure}
 
 \subsection{Preliminary Results}
+These driver circuits have successfully driven capacitive loads ranging from 40 nF at 100 Hz to 100 nF at 50 Hz at up to 520 V. The output voltage can be commanded wirelessly with update rate of up to 400 Hz, allowing untethered control (see figure \ref{fig:controlled-waveform}). With the shared converters circuit, we demonstrated controlled take-off while the circuit was powered by a power supply off-board. The shared converter circuit had also been tested with the custom batteries, confirming that power autonomous operation is possible (see figure \ref{fig:battery-powered}). At the time of writing this proposal, we are working on scaling the robot and the battery to fit with the independent converters circuit and producing a new flex PCB to address thermal and parasitic capacitance issues.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/sinusoidal.png}
+    \caption{Waveform with 1Hz sinusoidal control signal. Yellow and blue are output voltages of 2 channels. Red is input voltage. Green is input current.}
+    \label{fig:controlled-waveform}
+\end{figure}
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/battery-powered.png}
+    \caption{Shared converter circuit driven by battery showing functional voltage feedback to maintain high output voltage as battery voltage drops. Yellow and blue are output voltages of 2 channels. Red is input voltage. Green is input current.}
+    \label{fig:battery-powered}
+\end{figure}
 
 \end{document}
